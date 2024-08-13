@@ -33,17 +33,23 @@ export class KafkajsConsumer implements IConsumer {
     this.configService = configService;
     this.broker = this.configService.kafka.broker;
     this.clientId = this.configService.kafka.clientId;
+
     this.kafka = new Kafka({
       brokers: [this.broker],
-      clientId: this.clientId,
+      clientId: this.clientId.toString(),
     });
-    this.consumer = this.kafka.consumer(config);
+
+    console.log(config);
+    this.consumer = this.kafka.consumer({ groupId: config.groupId });
     this.logger = new Logger(`${topic.topics}-${config.groupId}`);
     this.notificationService = notificationService;
   }
 
   async consume(onMessage: (message: KafkaMessage) => Promise<void>) {
-    await this.consumer.subscribe(this.topic);
+    await this.consumer.subscribe({
+      topic: this.configService.kafka.topic,
+      fromBeginning: true,
+    });
     await this.consumer.run({
       eachMessage: async ({ message, partition }) => {
         this.logger.debug(`Processing message partition: ${partition}`);
