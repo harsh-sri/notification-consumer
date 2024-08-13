@@ -1,0 +1,10 @@
+FROM node:18.13.0-alpine3.17
+
+WORKDIR /notification-consumer-service
+
+COPY package*.json ./
+
+RUN npm install
+
+
+CMD npm run start:debug

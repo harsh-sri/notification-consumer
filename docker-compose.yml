@@ -1,0 +1,27 @@
+version: "3"
+
+networks:
+  my_kafka_network:
+    external: true
+
+services:
+  notification-consumer-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    container_name: notification-consumer-service
+    networks:
+      - my_kafka_network
+    ports:
+      - "3001:3001"
+      - "9229:9229"
+    env_file:
+      - ./.env
+    volumes:
+      - ./src:/notification-consumer-service/src
+      - ./static:/notification-consumer-service/static
+      - ./test:/notification-consumer-service/test
+      - ./tsconfig.json:/notification-consumer-service/tsconfig.json
+      - ./tsconfig.build.json:/notification-consumer-service/tsconfig.build.json
+      - ./nest-cli.json:/notification-consumer-service/nest-cli.json
+    restart: always
